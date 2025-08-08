@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Tab Detector</title>
+  <style>
+    body {
+      width: 300px;
+      min-height: 150px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    
+    .header {
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 18px;
+    }
+    
+    .status {
+      margin: 15px 0;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .toggle-container {
+      margin: 20px 0;
+    }
+    
+    .toggle-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toggle-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .toggle-button.disabled {
+      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    }
+    
+    .toggle-button.enabled {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+    }
+    
+    .ai-detected {
+      background-color: #ffe6e6;
+      color: #d63384;
+      border: 2px solid #f5c6cb;
+    }
+    
+    .safe-site {
+      background-color: #e6ffe6;
+      color: #198754;
+      border: 2px solid #badbcc;
+    }
+    
+    .checking {
+      background-color: #fff3cd;
+      color: #664d03;
+      border: 2px solid #ffeaa7;
+    }
+    
+    .footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>AI Tab Detector</h2>
+  </div>
+  
+  <div class="toggle-container">
+    <button id="toggleBtn" class="toggle-button">
+      <span id="toggleText">Loading...</span>
+    </button>
+  </div>
+  
+  <div id="status" class="status checking">
+    <span id="statusText">Checking current tab...</span>
+  </div>
+  
+  <div class="footer">
+    Click to activate/deactivate detection
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#667eea" stroke="#4f46e5" stroke-width="3"/>
+  
+  <!-- Brain/AI symbol -->
+  <path d="M40 45c-8 0-15 7-15 15s7 15 15 15h8c0 8 7 15 15 15s15-7 15-15h8c8 0 15-7 15-15s-7-15-15-15h-8c0-8-7-15-15-15s-15 7-15 15h-8z" fill="white" opacity="0.9"/>
+  
+  <!-- Neural network nodes -->
+  <circle cx="45" cy="50" r="3" fill="#4f46e5"/>
+  <circle cx="64" cy="45" r="3" fill="#4f46e5"/>
+  <circle cx="83" cy="50" r="3" fill="#4f46e5"/>
+  <circle cx="50" cy="70" r="3" fill="#4f46e5"/>
+  <circle cx="78" cy="70" r="3" fill="#4f46e5"/>
+  
+  <!-- Neural network connections -->
+  <line x1="45" y1="50" x2="64" y2="45" stroke="#4f46e5" stroke-width="1.5" opacity="0.7"/>
+  <line x1="64" y1="45" x2="83" y2="50" stroke="#4f46e5" stroke-width="1.5" opacity="0.7"/>
+  <line x1="45" y1="50" x2="50" y2="70" stroke="#4f46e5" stroke-width="1.5" opacity="0.7"/>
+  <line x1="83" y1="50" x2="78" y2="70" stroke="#4f46e5" stroke-width="1.5" opacity="0.7"/>
+  <line x1="50" y1="70" x2="78" y2="70" stroke="#4f46e5" stroke-width="1.5" opacity="0.7"/>
+  
+  <!-- Alert/detection symbol -->
+  <circle cx="90" cy="38" r="12" fill="#ff6b6b" opacity="0.9"/>
+  <text x="90" y="43" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+</svg>
