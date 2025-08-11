@@ -136,12 +136,24 @@ function normalizeDomain(domain) {
 
 let currentPlayingTabId = null;
 let hasDetectedAI = false; // Track if AI has been detected
-let isEnabled = true; // Track if the AI detector is enabled
+let isEnabled = false; // Track if the AI detector is enabled - DEFAULT TO FALSE
 
 // Initialize enabled state on startup
 chrome.runtime.onStartup.addListener(() => {
   chrome.storage.sync.get('aiDetectorEnabled', (data) => {
-    isEnabled = data.aiDetectorEnabled !== false; // Default to true
+    isEnabled = data.aiDetectorEnabled === true; // Default to false, only true if explicitly set
+    
+    // If enabled on startup, check current active tab
+    if (isEnabled) {
+      setTimeout(() => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs.length > 0) {
+            console.log("Extension startup - checking current active tab");
+            checkDomain(tabs[0], tabs[0].id);
+          }
+        });
+      }, 1000); // Small delay to ensure everything is loaded
+    }
   });
 });
 
@@ -149,10 +161,22 @@ chrome.runtime.onInstalled.addListener(() => {
   // Set default enabled state
   chrome.storage.sync.get('aiDetectorEnabled', (data) => {
     if (data.aiDetectorEnabled === undefined) {
-      chrome.storage.sync.set({ aiDetectorEnabled: true });
-      isEnabled = true;
+      chrome.storage.sync.set({ aiDetectorEnabled: false }); // DEFAULT TO FALSE
+      isEnabled = false;
     } else {
       isEnabled = data.aiDetectorEnabled;
+    }
+    
+    // If enabled after installation/reload, check current active tab
+    if (isEnabled) {
+      setTimeout(() => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs.length > 0) {
+            console.log("Extension installed/reloaded - checking current active tab");
+            checkDomain(tabs[0], tabs[0].id);
+          }
+        });
+      }, 1000); // Small delay to ensure everything is loaded
     }
   });
 });
@@ -166,11 +190,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // If disabled, stop any current sounds
     if (!isEnabled) {
       stopAllSounds();
+    } else {
+      // If enabled, immediately check the current active tab
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length > 0) {
+          console.log("Detector enabled - checking current active tab immediately");
+          checkDomain(tabs[0], tabs[0].id);
+        }
+      });
     }
     
     sendResponse({ success: true, enabled: isEnabled });
   } else if (request.action === "getDetectorStatus") {
     sendResponse({ enabled: isEnabled });
+  } else if (request.action === "checkCurrentTab") {
+    // Manual check trigger from popup
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length > 0) {
+        console.log("Manual check requested from popup");
+        checkDomain(tabs[0], tabs[0].id);
+      }
+    });
+    sendResponse({ success: true });
   }
   return true;
 });
@@ -195,6 +236,29 @@ chrome.runtime.onInstalled.addListener(() => {
       }
     }
   });
+});
+
+// Also inject content script when tab is updated (page reload/navigation)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  // Inject content script when page starts loading
+  if (changeInfo.status === "loading" && tab.url && isInjectableUrl(tab.url)) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ['content.js']
+    }).catch(() => {});
+  }
+  
+  // Check domain when page finishes loading
+  if (changeInfo.status === "complete") {
+    console.log("Tab updated:", tabId);
+    // Check if this is the currently active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (activeTabs) => {
+      if (activeTabs.length > 0 && activeTabs[0].id === tabId) {
+        console.log("Updated tab is the active tab - checking domain");
+        checkDomain(tab, tabId);
+      }
+    });
+  }
 });
 
 // Function to stop sound on previous tab
@@ -239,14 +303,6 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   chrome.tabs.get(activeInfo.tabId, tab => {
     checkDomain(tab, activeInfo.tabId);
   });
-});
-
-// Listen when a tab is updated (navigation)
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete") {
-    console.log("Tab updated:", tabId);
-    checkDomain(tab, tabId);
-  }
 });
 
 // Main function to check domain and play/stop sound

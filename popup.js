@@ -148,6 +148,11 @@ async function initializePopup() {
   
   updateToggleButton();
   await checkCurrentTab();
+  
+  // If detector is enabled, trigger a manual check in background script
+  if (isDetectorEnabled) {
+    chrome.runtime.sendMessage({ action: "checkCurrentTab" });
+  }
 }
 
 function setupEventListeners() {
@@ -166,6 +171,11 @@ async function toggleDetector() {
   if (response.success) {
     updateToggleButton();
     await checkCurrentTab();
+    
+    // Small delay then check again to ensure background script has processed
+    setTimeout(async () => {
+      await checkCurrentTab();
+    }, 500);
   }
 }
 
